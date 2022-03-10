@@ -13,7 +13,13 @@ int main(int argc, const char * argv[]) {
         cout << "How many processes would you like to create: ";
         cin >> processCount;
     }
-    Memory* memory = new Memory(processCount);
-    memory->firstFit();
+    int partitionCount = NULL;
+    while(!partitionCount || partitionCount < 1){
+        cout << "How many partitions would you like to create: ";
+        cin >> partitionCount;
+    }
+    Memory* memory = new Memory(processCount, partitionCount);
+    memory->bestFit();
+//    memory->firstFit();
     return 0;
 }
