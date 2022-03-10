@@ -113,31 +113,31 @@ public:
         return *value;
     }
     friend ostream& operator<<(ostream& cout, const Memory& mem){
-        cout << setw(40) << "Partition Data" << endl << endl;
-        cout << "    PART ID            PID          PART SIZE         PART STATUS" << endl;
+        cout << setw(45) << "Partition Data" << endl << endl;
+        cout << setw(15)  << "PART PID" << setw(15) << "PID" << setw(15) << "PROC SIZE" << setw(15) << "PROC STATUS" << endl;
         for(int i = 0; i < mem.partitionCount; i++){
-            cout << setw(5)  << mem.partitions[i].partitionid;
-            cout << setw(20) << mem.partitions[i].assignedPid;
+            cout << setw(15)  << mem.partitions[i].partitionid;
+            cout << setw(15) << mem.partitions[i].assignedPid;
             cout << setw(15) << mem.partitions[i].size;
-            cout << setw(23) << mem.partitions[i].pRunning;
+            cout << setw(15) << mem.partitions[i].pRunning;
             
             
             cout << endl;
         }
         cout << endl;
         int totalWaste = 0;
-        cout << setw(40) << "Process Data" << endl << endl;
-        cout << "    PID            PART PID        PROC SIZE        PART WASTE        PROC STATUS" << endl;
+        cout << setw(43) << "Process Data" << endl << endl;
+        cout << setw(15) << "PID" << setw(15) << "PART PID" << setw(15) << "PROC SIZE" << setw(15) << "PART WASTE" << setw(15) << "PROC STATUS" << endl;
         for(int i = 0; i < mem.processCount; i++){
-            cout << setw(7)  << mem.processes[i].pid;
-            cout << setw(20) << mem.processes[i].partitionId;
+            cout << setw(15) << mem.processes[i].pid;
+            cout << setw(15) << mem.processes[i].partitionId;
             cout << setw(15) << mem.processes[i].processSize;
-            cout << setw(20) << mem.processes[i].partitionWaste;
-            cout << setw(20) << mem.processes[i].status;
+            cout << setw(15) << mem.processes[i].partitionWaste;
+            cout << setw(15) << mem.processes[i].status;
             totalWaste += mem.processes[i].partitionWaste;
             cout << endl;
         }
-        cout << setw(60) << "TOTAL WASTE: " << totalWaste << endl << endl;
+        cout << setw(59) << "TOTAL WASTE: " << totalWaste << endl << endl;
         return cout;
     }
 

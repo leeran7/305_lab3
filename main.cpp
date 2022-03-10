@@ -19,8 +19,8 @@ int main(int argc, const char * argv[]) {
         cin >> partitionCount;
     }
     Memory* memory = new Memory(processCount, partitionCount);
-//    memory->bestFit();
-//    memory->firstFit();
+    memory->bestFit();
+    memory->firstFit();
     memory->nextFit();
     return 0;
 }
