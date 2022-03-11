@@ -38,7 +38,7 @@ class Memory {
     Partition* partitions;
     Process* processes;
     int processCount;
-    int partitionCount = NULL;
+    int partitionCount;
     
 public:
     Memory(int processCount, int partitionCount){
@@ -82,6 +82,13 @@ public:
             sizeOfPartitions = NULL;
             errorMsg = "";
         }
+    }
+    void setProcessAndPartition(int procId, int partId, int currWaste){
+        processes[procId].partitionWaste = currWaste;
+        processes[procId].partitionId = partId;
+        processes[procId].status = "Running";
+        partitions[partId].assignedPid = procId;
+        partitions[partId].pRunning = "Running";
     }
     void initProcesses(){
         int sizeOfProcess = NULL;
@@ -155,7 +162,6 @@ public:
                         processes[procId].status = "Running";
                         partitions[partId].assignedPid = procId;
                         partitions[partId].pRunning = "Running";
-                        
                     }
                 }
             }
@@ -170,7 +176,9 @@ public:
         int bestWaste = initialWaste;
         for(int procId = 0; procId < processCount; procId++){
             int currWaste = initialWaste;
-            int bestIdx = -1;
+            bestWaste = initialWaste;
+            int bestIdx = NULL;
+            currWaste = initialWaste;
             
             for(int partId = 0; partId < partitionCount; partId++){
                 currWaste = partitions[partId].size - processes[procId].processSize;
@@ -186,18 +194,72 @@ public:
                 partitions[bestIdx].assignedPid = procId;
                 partitions[bestIdx].pRunning = "Running";
             }
-            bestWaste = initialWaste;
-            bestIdx = NULL;
-            currWaste = initialWaste;
         }
         cout << *this;
         resetMemory();
     };
     void nextFit(){
         cout << setw(50)  << "<<<<<<<<<< NEXT FIT >>>>>>>>>>" << endl;
-        
+        int const initialWaste = 99999999;
+        for(int procId = 0; procId < processCount; procId++){
+            int currWaste = initialWaste;
+            bool nextFit = false;
+            for(int partId = 0; partId < partitionCount; partId++){
+                if(partitions[partId].size >= processes[procId].processSize){
+                    if(nextFit){
+                        currWaste = partitions[partId].size - processes[procId].processSize;
+                        if(partitions[partId].pRunning == "Waiting" && processes[procId].status == "Waiting"){
+                            processes[procId].partitionWaste = currWaste;
+                            processes[procId].partitionId = partId;
+                            processes[procId].status = "Running";
+                            partitions[partId].assignedPid = procId;
+                            partitions[partId].pRunning = "Running";
+                        }
+                    } else {
+                        nextFit = true;
+                        partId = 0;
+                        
+                    }
+                    
+                }
+            }
+            
+        }
+        cout << *this;
+        resetMemory();
     };
-    void worstFit(){};
+    void worstFit(){
+        cout << setw(50) << "<<<<<<<<<< WORST FIT >>>>>>>>>>" << endl;
+        int const initialWaste = NULL;
+        int worseWaste = initialWaste;
+        for(int procId = 0; procId < processCount; procId++){
+            int currWaste = initialWaste;
+            worseWaste = initialWaste;
+            int worstIdx = NULL;
+            currWaste = initialWaste;
+            
+            for(int partId = 0; partId < partitionCount; partId++){
+                currWaste = partitions[partId].size - processes[procId].processSize;
+                cout << "PartId: " << partId << endl;
+                cout << "ProcId: " << procId << endl;
+                cout << "CurrWaste: " << currWaste << endl;
+                cout << "WorstWaste: " << worseWaste << endl;
+                if(currWaste >= 0 && partitions[partId].pRunning == "Waiting" && currWaste >= worseWaste){
+                    worseWaste = currWaste;
+                    worstIdx = partId;
+                }
+            }
+            if(partitions[worstIdx].pRunning == "Waiting" && processes[procId].status == "Waiting"){
+                processes[procId].partitionWaste = worseWaste;
+                processes[procId].partitionId = worstIdx;
+                processes[procId].status = "Running";
+                partitions[worstIdx].assignedPid = procId;
+                partitions[worstIdx].pRunning = "Running";
+            }
+        }
+        cout << *this;
+        resetMemory();
+    };
 };
 
 #endif /* process_h */
