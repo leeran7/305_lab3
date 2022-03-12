@@ -247,6 +247,7 @@ public:
                 if(currWaste >= 0 && partitions[partId].pRunning == "Waiting" && currWaste >= worseWaste){
                     worseWaste = currWaste;
                     worstIdx = partId;
+                    
                 }
             }
             if(partitions[worstIdx].pRunning == "Waiting" && processes[procId].status == "Waiting"){
