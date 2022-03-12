@@ -240,17 +240,14 @@ public:
             
             for(int partId = 0; partId < partitionCount; partId++){
                 currWaste = partitions[partId].size - processes[procId].processSize;
-                cout << "PartId: " << partId << endl;
-                cout << "ProcId: " << procId << endl;
-                cout << "CurrWaste: " << currWaste << endl;
-                cout << "WorstWaste: " << worseWaste << endl;
-                if(currWaste >= 0 && partitions[partId].pRunning == "Waiting" && currWaste >= worseWaste){
-                    worseWaste = currWaste;
-                    worstIdx = partId;
-                    
+                if(currWaste >= 0 && currWaste >= worseWaste){
+                    if(partitions[partId].pRunning == "Waiting"){
+                        worseWaste = currWaste;
+                        worstIdx = partId;
+                    }
                 }
             }
-            if(partitions[worstIdx].pRunning == "Waiting" && processes[procId].status == "Waiting"){
+                if(worstIdx){
                 processes[procId].partitionWaste = worseWaste;
                 processes[procId].partitionId = worstIdx;
                 processes[procId].status = "Running";
