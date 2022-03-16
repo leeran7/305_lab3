@@ -29,6 +29,8 @@ public:
         this->pid = id;
         this->status = "Waiting";
         this->processSize = processSize;
+        this->partitionWaste = 0;
+        this->partitionId = -1;
     }
 };;
 
@@ -61,6 +63,8 @@ public:
         for(int i = 0; i < partitionCount; i++){
             partitions[i].size =  partitionSizes[i];
             partitions[i].partitionid = i;
+            partitions[i].pRunning = "Waiting";
+            partitions[i].assignedPid = -1;
         }
         for(int i = 0; i < processCount; i++){
             processes[i].constructor(i, processSizes[i]);
@@ -258,6 +262,63 @@ public:
         cout << *this;
         resetMemory();
     };
+    
+    void worstFitDynamic(){
+            cout << setw(55) << "<<<<<<<<<< WORST FIT DYNAMIC >>>>>>>>>>" << endl;
+            int const initialWaste = -1;
+            int worseWaste = initialWaste;
+            int newPartitionCount = partitionCount;
+            for(int procId = 0; procId < processCount; procId++){
+                int currWaste = initialWaste;
+                worseWaste = initialWaste;
+                int worstIdx = -1;
+                currWaste = initialWaste;
+                
+                for(int partId = 0; partId < newPartitionCount; partId++){
+                    currWaste = partitions[partId].size - processes[procId].processSize;
+                    if(currWaste >= 0 && currWaste >= worseWaste){
+                        if(partitions[partId].pRunning == "Waiting"){
+                            worseWaste = currWaste;
+                            worstIdx = partId;
+                        }
+                    }
+                }
+                if(worstIdx){
+                    if(worseWaste > 0){
+                        ++newPartitionCount;
+                        addPartition(newPartitionCount);
+                        partitions[newPartitionCount - 1].size = worseWaste;
+                        worseWaste = 0;
+                    }
+                    processes[procId].partitionWaste = 0;
+                    processes[procId].partitionId = worstIdx;
+                    processes[procId].status = "Running";
+                    partitions[worstIdx].assignedPid = procId;
+                    partitions[worstIdx].pRunning = "Running";
+                    partitions[worstIdx].size = processes[procId].processSize;
+                }
+            }
+            cout << *this;
+            resetMemory();
+        };
+        void addPartition(int pCount){
+            Partition* temp = new Partition[pCount];
+            for(int i = 0; i < this->partitionCount; i++){
+                temp[i].size = partitions[i].size;
+                temp[i].pRunning = partitions[i].pRunning;
+                temp[i].assignedPid = partitions[i].assignedPid;
+                temp[i].partitionid = partitions[i].partitionid;
+            }
+            delete[] partitions;
+            partitionCount++;
+            this->partitions = new Partition[pCount];
+            for(int i = 0; i < this->partitionCount; i++){
+                partitions[i].size = temp[i].size;
+                partitions[i].pRunning = temp[i].pRunning;
+                partitions[i].assignedPid = temp[i].assignedPid;
+                partitions[i].partitionid = i;
+            }
+        }
 };
 
 #endif /* process_h */
